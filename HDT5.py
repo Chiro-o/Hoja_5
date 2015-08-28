@@ -37,7 +37,7 @@ import math
 def proceso(nombre,t_ingreso,cant_inst,cant_RAM,ixu):
     #Definición de la variable global 
     global tiempoTotal
-    global desviacion
+    global listaDesviacion
     
     #Esta variable tendrá la función de mantener el while en funcionamiento
     entra=1
@@ -90,7 +90,7 @@ def proceso(nombre,t_ingreso,cant_inst,cant_RAM,ixu):
     #Operaciones para el cálculo del tiempo promedio de un solo proceso
     tiempoTotalxP = env.now - Tiempo_ingreso
     tiempoTotal = tiempoTotal + tiempoTotalxP
-    desviacion = desviacion+(tiempoTotalxP-9.54)**2
+    listaDesviacion.append(tiempoTotalxP)
 
     
 #Creación del environment y definición de variables
@@ -101,10 +101,10 @@ def proceso(nombre,t_ingreso,cant_inst,cant_RAM,ixu):
 #ram: Definición del contenedor
 #ixu: Cantidad de instrucciones a realizar por unidad de tiempo
 env = simpy.Environment()
-cpu = simpy.Resource(env, capacity = 1) #El CPU puede atender 1 proceso a la vez
+cpu = simpy.Resource(env, capacity = 1) #El CPU puede atender 1 procesos
 cpuEspera = simpy.Resource(env, capacity = 1)
 RAM = 100
-ram = simpy.Container(env, init=RAM, capacity=RAM) 
+ram = simpy.Container(env, init=RAM, capacity=RAM) #Capacidad de la memoria RAM
 ixu = 3
 random_seed= 40 #Definición de la semilla del random
 random.seed(random_seed)
@@ -112,6 +112,7 @@ intervalo= 10 #Intervalo de creación de procesos
 tiempoTotal = 0.0
 cantProcesos = 25
 desviacion = 0.0
+listaDesviacion = []
 
 #Creacion de los procesos
 for  i in range (cantProcesos):
@@ -119,7 +120,13 @@ for  i in range (cantProcesos):
     cant_RAM= random.randint(1,10) #Asignación de cantidad de RAM a solicitar
     t_ingreso=random.expovariate(1.0/intervalo) #Tiempo de ingreso
     env.process(proceso(i,t_ingreso,cant_inst,cant_RAM,ixu)) #Creación del proceso
-
+#corre el enviroment
 env.run()
-print "el promedio es ", tiempoTotal/cantProcesos #Muestra del promedio
+#Muestra del promedio
+print "el promedio es ", tiempoTotal/cantProcesos 
+#Almacenamiento de la desviación estandar
+for i in listaDesviacion:
+    desviacion = desviacion+(i-(tiempoTotal/cantProcesos))**2
+    
+#Muestra la desviación estandar 
 print 'Desviacion: ', math.sqrt(desviacion/(cantProcesos-1))
