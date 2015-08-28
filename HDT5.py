@@ -101,10 +101,10 @@ def proceso(nombre,t_ingreso,cant_inst,cant_RAM,ixu):
 #ram: Definición del contenedor
 #ixu: Cantidad de instrucciones a realizar por unidad de tiempo
 env = simpy.Environment()
-cpu = simpy.Resource(env, capacity = 1) #El CPU puede atender 1 procesos
+cpu = simpy.Resource(env, capacity = 1) #El CPU puede atender 1 proceso a la vez
 cpuEspera = simpy.Resource(env, capacity = 1)
 RAM = 100
-ram = simpy.Container(env, init=RAM, capacity=RAM) #el cargador de bateria soporta 2 carros
+ram = simpy.Container(env, init=RAM, capacity=RAM) 
 ixu = 3
 random_seed= 40 #Definición de la semilla del random
 random.seed(random_seed)
